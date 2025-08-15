@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: CDTS AI Review
-        uses: hnallamala/cdts-ai-reviewer@latest
+        uses: hnallamala/cdts-ai-reviewer@main
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
