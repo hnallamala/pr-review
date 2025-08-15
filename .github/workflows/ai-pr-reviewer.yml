@@ -1,4 +1,4 @@
-name: Code Review
+name: CDTS AI Code Review Example
 
 permissions:
   contents: read
@@ -6,25 +6,59 @@ permissions:
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
   pull_request_review_comment:
     types: [created]
 
 concurrency:
-  group:
-    ${{ github.repository }}-${{ github.event.number || github.head_ref ||
-    github.sha }}-${{ github.workflow }}-${{ github.event_name ==
-    'pull_request_review_comment' && 'pr_comment' || 'pr' }}
-  cancel-in-progress: ${{ github.event_name != 'pull_request_review_comment' }}
+  group: ${{ github.repository }}-${{ github.event.number }}-cdts-review
+  cancel-in-progress: true
 
 jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: coderabbitai/ai-pr-reviewer@latest
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: CDTS AI Review
+        uses: ./
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
+          # Basic configuration
           debug: false
           review_simple_changes: false
           review_comment_lgtm: false
+          
+          # AI model settings
+          ai_model: gpt-4
+          ai_temperature: 0.1
+          ai_max_tokens: 4000
+          
+          # Review limits
+          max_files: 100
+          
+          # File filtering
+          path_filters: |
+            !dist/**
+            !**/*.lock
+            !**/*.log
+            !node_modules/**
+            !coverage/**
+            !.git/**
+          
+          # Custom system message
+          system_message: |
+            You are @cdts-ai-reviewer, an expert code reviewer focused on:
+            - Code quality and best practices
+            - Security vulnerabilities
+            - Performance optimizations
+            - Maintainability and readability
+            - Testing coverage
+            
+            Always provide constructive feedback and specific suggestions for improvement.
+          
+          # Language preference
+          language: en 
