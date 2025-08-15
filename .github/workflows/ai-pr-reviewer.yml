@@ -28,7 +28,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
           # Basic configuration
-          debug: false
+          debug: true
           review_simple_changes: false
           review_comment_lgtm: false
           
